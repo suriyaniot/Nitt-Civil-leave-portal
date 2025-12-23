@@ -1,0 +1,2834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Leave Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --phd: #9b59b6;
+            --project: #1abc9c;
+            --staff: #e67e22;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+        }
+        
+        header {
+            background-color: rgba(255, 255, 255, 0.95);
+            color: var(--primary);
+            padding: 20px 0;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .login-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .login-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+        }
+        
+        .login-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+        }
+        
+        .staff-card::before {
+            background-color: var(--staff);
+        }
+        
+        .student-card::before {
+            background-color: var(--success);
+        }
+        
+        .phd-card::before {
+            background-color: var(--phd);
+        }
+        
+        .project-card::before {
+            background-color: var(--project);
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .login-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .staff-icon {
+            color: var(--staff);
+        }
+        
+        .student-icon {
+            color: var(--success);
+        }
+        
+        .phd-icon {
+            color: var(--phd);
+        }
+        
+        .project-icon {
+            color: var(--project);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        input, select, button, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            background-color: white;
+        }
+        
+        button {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-casual {
+            background-color: var(--success);
+        }
+        
+        .btn-casual:hover {
+            background-color: #27ae60;
+        }
+        
+        .btn-od {
+            background-color: var(--warning);
+        }
+        
+        .btn-od:hover {
+            background-color: #e67e22;
+        }
+        
+        .btn-rh {
+            background-color: var(--phd);
+        }
+        
+        .btn-rh:hover {
+            background-color: #8e44ad;
+        }
+        
+        .btn-vacation {
+            background-color: var(--project);
+        }
+        
+        .btn-vacation:hover {
+            background-color: #16a085;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: 600;
+        }
+        
+        .tab.active {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .selection-container {
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .filter-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .date-range-filter {
+            display: flex;
+            gap: 10px;
+            align-items: end;
+        }
+        
+        .date-range-filter .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+        
+        .member-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .member-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .member-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+        }
+        
+        .mtech-card::before {
+            background-color: var(--success);
+        }
+        
+        .phd-card-member::before {
+            background-color: var(--phd);
+        }
+        
+        .project-card-member::before {
+            background-color: var(--project);
+        }
+        
+        .member-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .member-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .member-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .member-roll {
+            color: #7f8c8d;
+            font-weight: 500;
+        }
+        
+        .leave-balance {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .balance-item {
+            text-align: center;
+            padding: 10px;
+            border-radius: 6px;
+            background-color: #f8f9fa;
+        }
+        
+        .balance-label {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+        }
+        
+        .balance-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-top: 5px;
+        }
+        
+        .casual-balance {
+            color: var(--success);
+        }
+        
+        .od-balance {
+            color: var(--secondary);
+        }
+        
+        .rh-balance {
+            color: var(--phd);
+        }
+        
+        .vacation-balance {
+            color: var(--project);
+        }
+        
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .action-buttons button {
+            margin-top: 0;
+        }
+        
+        .phd-actions {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        
+        .project-actions {
+            grid-template-columns: 1fr;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #7f8c8d;
+            width: auto;
+        }
+        
+        .form-row {
+            margin-bottom: 15px;
+        }
+        
+        .form-row label {
+            margin-bottom: 5px;
+        }
+        
+        .leave-history {
+            margin-top: 25px;
+        }
+        
+        .history-title {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .history-list {
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            padding: 10px;
+        }
+        
+        .history-item {
+            padding: 8px 10px;
+            border-bottom: 1px solid #f1f1f1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        
+        .leave-type {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .type-casual {
+            background-color: rgba(46, 204, 113, 0.2);
+            color: var(--success);
+        }
+        
+        .type-od {
+            background-color: rgba(52, 152, 219, 0.2);
+            color: var(--secondary);
+        }
+        
+        .type-rh {
+            background-color: rgba(155, 89, 182, 0.2);
+            color: var(--phd);
+        }
+        
+        .type-vacation {
+            background-color: rgba(26, 188, 156, 0.2);
+            color: var(--project);
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: white;
+            font-size: 0.9rem;
+        }
+        
+        .dashboard {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .welcome-message {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        
+        .logout-btn {
+            width: auto;
+            padding: 8px 15px;
+            background-color: var(--danger);
+        }
+        
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background-color: var(--light);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+        
+        .stat-casual {
+            color: var(--success);
+        }
+        
+        .stat-od {
+            color: var(--secondary);
+        }
+        
+        .stat-rh {
+            color: var(--phd);
+        }
+        
+        .stat-vacation {
+            color: var(--project);
+        }
+        
+        .staff-ui-container {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .staff-ui-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .staff-ui-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .staff-ui-controls {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .staff-ui-controls button {
+            width: auto;
+            padding: 8px 15px;
+        }
+        
+        .edit-quota-btn {
+            background-color: var(--warning);
+            margin-left: 10px;
+            padding: 8px 15px;
+            width: auto;
+        }
+        
+        .bulk-edit-btn {
+            background-color: var(--phd);
+            margin-left: 10px;
+            padding: 8px 15px;
+            width: auto;
+        }
+        
+        @media (max-width: 768px) {
+            .login-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .member-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .date-range-filter {
+                flex-direction: column;
+            }
+            
+            .staff-ui-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .staff-ui-controls {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Enhanced Leave Management System</h1>
+            <p class="subtitle">Comprehensive portal for M.Tech, PhD, and Project Staff leaves</p>
+        </header>
+        
+        <!-- Login Section -->
+        <div id="login-section" class="login-container">
+            <div class="login-card staff-card">
+                <div class="login-header">
+                    <div class="login-icon staff-icon">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <h2>Office Staff Login</h2>
+                </div>
+                <form id="staff-login-form">
+                    <div class="form-group">
+                        <label for="staff-username">Username</label>
+                        <input type="text" id="staff-username" placeholder="Enter your username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="staff-password">Password</label>
+                        <input type="password" id="staff-password" placeholder="Enter your password" required>
+                    </div>
+                    <button type="submit">Login as Staff</button>
+                </form>
+            </div>
+            
+            <div class="login-card student-card">
+                <div class="login-header">
+                    <div class="login-icon student-icon">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <h2>M.Tech Student Login</h2>
+                </div>
+                <form id="student-login-form">
+                    <div class="form-group">
+                        <label for="student-roll">Roll Number</label>
+                        <input type="text" id="student-roll" placeholder="Enter your roll number" required>
+                    </div>
+                    <button type="submit">Login as Student</button>
+                </form>
+            </div>
+            
+            <div class="login-card phd-card">
+                <div class="login-header">
+                    <div class="login-icon phd-icon">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <h2>PhD Candidate Login</h2>
+                </div>
+                <form id="phd-login-form">
+                    <div class="form-group">
+                        <label for="phd-roll">Candidate ID</label>
+                        <input type="text" id="phd-roll" placeholder="Enter your candidate ID" required>
+                    </div>
+                    <button type="submit">Login as PhD Candidate</button>
+                </form>
+            </div>
+            
+            <div class="login-card project-card">
+                <div class="login-header">
+                    <div class="login-icon project-icon">
+                        <i class="fas fa-user-cog"></i>
+                    </div>
+                    <h2>Project Staff Login</h2>
+                </div>
+                <form id="project-login-form">
+                    <div class="form-group">
+                        <label for="project-roll">Staff ID</label>
+                        <input type="text" id="project-roll" placeholder="Enter your staff ID" required>
+                    </div>
+                    <button type="submit">Login as Project Staff</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Office Staff Dashboard -->
+        <div id="staff-dashboard" class="dashboard" style="display: none;">
+            <div class="dashboard-header">
+                <div class="welcome-message">Welcome, Office Staff</div>
+                <button class="logout-btn" id="staff-logout">Logout</button>
+            </div>
+            
+            <div class="staff-ui-container">
+                <div class="staff-ui-header">
+                    <div class="staff-ui-title">Leave Management Dashboard</div>
+                    <div class="staff-ui-controls">
+                        <button class="btn-casual" id="quick-stats-btn">Quick Stats</button>
+                        <button class="edit-quota-btn" id="edit-quota-btn">Edit Leave Quotas</button>
+                        <button class="bulk-edit-btn" id="bulk-edit-btn">Bulk Edit Quotas</button>
+                        <button class="btn-od" id="export-data-btn">Export Data</button>
+                        <button class="btn-vacation" id="refresh-data-btn">Refresh Data</button>
+                    </div>
+                </div>
+                
+                <div class="tabs">
+                    <div class="tab active" data-tab="manage-leaves">Manage Leaves</div>
+                    <div class="tab" data-tab="view-members">View All Members</div>
+                    <div class="tab" data-tab="date-filter">Date Range Filter</div>
+                    <div class="tab" data-tab="phd-scholar">PhD Scholar</div>
+                    <div class="tab" data-tab="edit-quotas">Edit Quotas</div>
+                </div>
+            </div>
+            
+            <!-- Manage Leaves Tab -->
+            <div id="manage-leaves" class="tab-content active">
+                <div class="selection-container">
+                    <div class="form-group">
+                        <label for="member-type">Select Member Type</label>
+                        <select id="member-type">
+                            <option value="">-- Select Member Type --</option>
+                            <option value="mtech">M.Tech Students</option>
+                            <option value="phd">PhD Candidates</option>
+                            <option value="project">Project Staff</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="year-select">Select Year</label>
+                        <select id="year-select" disabled>
+                            <option value="">-- Select Year --</option>
+                            <option value="1">First Year</option>
+                            <option value="2">Second Year</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="specialization-select">Select Specialization</label>
+                        <select id="specialization-select" disabled>
+                            <option value="">-- Select Specialization --</option>
+                            <option value="tem">Transportation Engineering and Management</option>
+                            <option value="se">Structural Engineering</option>
+                            <option value="ge">Geotechnical Engineering</option>
+                            <option value="ee">Environmental Engineering</option>
+                        </select>
+                    </div>
+                    
+                    <button id="load-members" disabled>Load Members</button>
+                </div>
+                
+                <div id="member-container" class="member-list">
+                    <!-- Member cards will be dynamically generated here -->
+                </div>
+            </div>
+            
+            <!-- View All Members Tab -->
+            <div id="view-members" class="tab-content">
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div>Total Members</div>
+                        <div class="stat-value" id="total-members">0</div>
+                        <div>Across all categories</div>
+                    </div>
+                    <div class="stat-card">
+                        <div>Leaves This Month</div>
+                        <div class="stat-value" id="leaves-this-month">0</div>
+                        <div>All leave types</div>
+                    </div>
+                    <div class="stat-card">
+                        <div>Pending Approvals</div>
+                        <div class="stat-value" id="pending-approvals">0</div>
+                        <div>Requiring attention</div>
+                    </div>
+                </div>
+                
+                <div class="selection-container">
+                    <div class="filter-container">
+                        <div class="form-group">
+                            <label for="filter-member-type">Filter by Member Type</label>
+                            <select id="filter-member-type">
+                                <option value="all">All Types</option>
+                                <option value="mtech">M.Tech Students</option>
+                                <option value="phd">PhD Candidates</option>
+                                <option value="project">Project Staff</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="filter-year">Filter by Year</label>
+                            <select id="filter-year">
+                                <option value="all">All Years</option>
+                                <option value="1">First Year</option>
+                                <option value="2">Second Year</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="filter-specialization">Filter by Specialization</label>
+                            <select id="filter-specialization">
+                                <option value="all">All Specializations</option>
+                                <option value="tem">Transportation Engineering</option>
+                                <option value="se">Structural Engineering</option>
+                                <option value="ge">Geotechnical Engineering</option>
+                                <option value="ee">Environmental Engineering</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button id="apply-filters">Apply Filters</button>
+                </div>
+                
+                <div id="all-members-container" class="member-list">
+                    <!-- All members will be displayed here -->
+                </div>
+            </div>
+            
+            <!-- Date Range Filter Tab -->
+            <div id="date-filter" class="tab-content">
+                <div class="selection-container">
+                    <h3>Filter Leaves by Date Range</h3>
+                    <div class="date-range-filter">
+                        <div class="form-group">
+                            <label for="start-date">Start Date</label>
+                            <input type="date" id="start-date" value="2025-08-25">
+                        </div>
+                        <div class="form-group">
+                            <label for="end-date">End Date</label>
+                            <input type="date" id="end-date" value="2025-09-25">
+                        </div>
+                        <div class="form-group">
+                            <button id="apply-date-filter">Apply Date Filter</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="filter-member-type-date">Filter by Member Type</label>
+                        <select id="filter-member-type-date">
+                            <option value="all">All Types</option>
+                            <option value="mtech">M.Tech Students</option>
+                            <option value="phd">PhD Candidates</option>
+                            <option value="project">Project Staff</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div id="date-filter-results">
+                    <!-- Date filter results will be displayed here -->
+                </div>
+            </div>
+            
+            <!-- PhD Scholar Tab -->
+            <div id="phd-scholar" class="tab-content">
+                <div class="selection-container">
+                    <h3>PhD Scholar Management</h3>
+                    <p>Manage leaves for PhD candidates with specialized leave types.</p>
+                    
+                    <div class="form-group">
+                        <label for="phd-filter">Filter PhD Candidates</label>
+                        <select id="phd-filter">
+                            <option value="all">All PhD Candidates</option>
+                            <option value="research">By Research Area</option>
+                            <option value="year">By Year of Enrollment</option>
+                        </select>
+                    </div>
+                    
+                    <button id="load-phd-candidates">Load PhD Candidates</button>
+                </div>
+                
+                <div id="phd-container" class="member-list">
+                    <!-- PhD candidate cards will be displayed here -->
+                </div>
+            </div>
+            
+            <!-- Edit Quotas Tab -->
+            <div id="edit-quotas" class="tab-content">
+                <div class="selection-container">
+                    <h3>Edit Leave Quotas</h3>
+                    <p>Office staff can modify leave quotas for individual members or bulk update all members.</p>
+                    
+                    <div class="filter-container">
+                        <div class="form-group">
+                            <label for="quota-member-type">Member Type</label>
+                            <select id="quota-member-type">
+                                <option value="mtech">M.Tech Students</option>
+                                <option value="phd">PhD Candidates</option>
+                                <option value="project">Project Staff</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="quota-year">Year (for M.Tech)</label>
+                            <select id="quota-year">
+                                <option value="1">First Year</option>
+                                <option value="2">Second Year</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="quota-specialization">Specialization (for M.Tech)</label>
+                            <select id="quota-specialization">
+                                <option value="all">All Specializations</option>
+                                <option value="tem">Transportation Engineering</option>
+                                <option value="se">Structural Engineering</option>
+                                <option value="ge">Geotechnical Engineering</option>
+                                <option value="ee">Environmental Engineering</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="search-member">Search Member (by Name or Roll No)</label>
+                        <input type="text" id="search-member" placeholder="Search for a member...">
+                    </div>
+                    
+                    <button id="load-for-quota-edit">Load Members for Quota Edit</button>
+                    <button class="bulk-edit-btn" id="apply-bulk-quota">Apply Bulk Quota Changes</button>
+                </div>
+                
+                <div id="quota-edit-container" class="member-list">
+                    <!-- Members with editable quotas will be displayed here -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- M.Tech Student Dashboard -->
+        <div id="student-dashboard" class="dashboard" style="display: none;">
+            <div class="dashboard-header">
+                <div class="welcome-message">Welcome, <span id="student-name">Student</span></div>
+                <button class="logout-btn" id="student-logout">Logout</button>
+            </div>
+            
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div>Casual Leave Balance</div>
+                    <div class="stat-value stat-casual" id="student-casual-balance">0</div>
+                    <div>Days remaining (Total: 8)</div>
+                </div>
+                <div class="stat-card">
+                    <div>On Duty Balance</div>
+                    <div class="stat-value stat-od" id="student-od-balance">0</div>
+                    <div>Days remaining (Total: 15)</div>
+                </div>
+                <div class="stat-card">
+                    <div>Total Leaves Taken</div>
+                    <div class="stat-value" id="student-total-leaves">0</div>
+                    <div>This academic year</div>
+                </div>
+            </div>
+            
+            <div class="leave-history">
+                <div class="history-title">Your Leave History</div>
+                <div class="history-list" id="student-leave-history">
+                    <!-- Student's leave history will be displayed here -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- PhD Candidate Dashboard -->
+        <div id="phd-dashboard" class="dashboard" style="display: none;">
+            <div class="dashboard-header">
+                <div class="welcome-message">Welcome, <span id="phd-name">PhD Candidate</span></div>
+                <button class="logout-btn" id="phd-logout">Logout</button>
+            </div>
+            
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div>Casual Leave Balance</div>
+                    <div class="stat-value stat-casual" id="phd-casual-balance">0</div>
+                    <div>Days remaining (Total: 8)</div>
+                </div>
+                <div class="stat-card">
+                    <div>Restricted Holiday Balance</div>
+                    <div class="stat-value stat-rh" id="phd-rh-balance">0</div>
+                    <div>Days remaining (Total: 2)</div>
+                </div>
+                <div class="stat-card">
+                    <div>Vacation/Medical Leave Balance</div>
+                    <div class="stat-value stat-vacation" id="phd-vacation-balance">0</div>
+                    <div>Days remaining (Total: 14)</div>
+                </div>
+                <div class="stat-card">
+                    <div>On Duty Balance</div>
+                    <div class="stat-value stat-od" id="phd-od-balance">0</div>
+                    <div>Days remaining (Total: 30)</div>
+                </div>
+            </div>
+            
+            <div class="leave-history">
+                <div class="history-title">Your Leave History</div>
+                <div class="history-list" id="phd-leave-history">
+                    <!-- PhD candidate's leave history will be displayed here -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Project Staff Dashboard -->
+        <div id="project-dashboard" class="dashboard" style="display: none;">
+            <div class="dashboard-header">
+                <div class="welcome-message">Welcome, <span id="project-name">Project Staff</span></div>
+                <button class="logout-btn" id="project-logout">Logout</button>
+            </div>
+            
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div>Total Leave Balance</div>
+                    <div class="stat-value stat-vacation" id="project-total-balance">0</div>
+                    <div>Days remaining (Total: 30)</div>
+                </div>
+                <div class="stat-card">
+                    <div>Leaves Taken This Year</div>
+                    <div class="stat-value" id="project-leaves-taken">0</div>
+                    <div>All leave types</div>
+                </div>
+                <div class="stat-card">
+                    <div>Available Balance</div>
+                    <div class="stat-value stat-casual" id="project-available-balance">0</div>
+                    <div>For the remainder of the year</div>
+                </div>
+            </div>
+            
+            <div class="leave-history">
+                <div class="history-title">Your Leave History</div>
+                <div class="history-list" id="project-leave-history">
+                    <!-- Project staff's leave history will be displayed here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal for entering leave details -->
+    <div id="leave-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-title">Apply Leave</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <form id="leave-form">
+                <input type="hidden" id="member-id">
+                <input type="hidden" id="member-type-input">
+                <input type="hidden" id="leave-type">
+                
+                <div class="form-row">
+                    <label for="from-date">From Date</label>
+                    <input type="date" id="from-date" required>
+                </div>
+                
+                <div class="form-row">
+                    <label for="to-date">To Date</label>
+                    <input type="date" id="to-date" required>
+                </div>
+                
+                <div class="form-row">
+                    <label for="reason">Reason (Optional)</label>
+                    <textarea id="reason" rows="3" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;"></textarea>
+                </div>
+                
+                <button type="submit">Submit Leave</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal for editing leave details -->
+    <div id="edit-leave-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit Leave</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <form id="edit-leave-form">
+                <input type="hidden" id="edit-leave-id">
+                <input type="hidden" id="edit-member-id">
+                <input type="hidden" id="edit-member-type">
+                <input type="hidden" id="edit-leave-type">
+                
+                <div class="form-row">
+                    <label for="edit-from-date">From Date</label>
+                    <input type="date" id="edit-from-date" required>
+                </div>
+                
+                <div class="form-row">
+                    <label for="edit-to-date">To Date</label>
+                    <input type="date" id="edit-to-date" required>
+                </div>
+                
+                <div class="form-row">
+                    <label for="edit-reason">Reason (Optional)</label>
+                    <textarea id="edit-reason" rows="3" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;"></textarea>
+                </div>
+                
+                <div class="action-buttons">
+                    <button type="submit" class="btn-casual">Update Leave</button>
+                    <button type="button" class="btn-danger" id="delete-leave-btn">Delete Leave</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal for editing leave quotas -->
+    <div id="edit-quota-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit Leave Quota</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <form id="edit-quota-form">
+                <input type="hidden" id="quota-member-id">
+                <input type="hidden" id="quota-member-type">
+                <input type="hidden" id="quota-member-roll">
+                <input type="hidden" id="quota-member-name">
+                
+                <div class="form-row">
+                    <label for="quota-casual">Casual Leave Quota</label>
+                    <input type="number" id="quota-casual" min="0" max="100" required>
+                </div>
+                
+                <div class="form-row">
+                    <label for="quota-od">On Duty Quota</label>
+                    <input type="number" id="quota-od" min="0" max="100" required>
+                </div>
+                
+                <div class="form-row" id="quota-rh-container">
+                    <label for="quota-rh">Restricted Holiday Quota</label>
+                    <input type="number" id="quota-rh" min="0" max="100" required>
+                </div>
+                
+                <div class="form-row" id="quota-vacation-container">
+                    <label for="quota-vacation">Vacation/Medical Leave Quota</label>
+                    <input type="number" id="quota-vacation" min="0" max="100" required>
+                </div>
+                
+                <div class="form-row" id="quota-total-container">
+                    <label for="quota-total">Total Leave Quota</label>
+                    <input type="number" id="quota-total" min="0" max="365" required>
+                </div>
+                
+                <button type="submit">Update Quota</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal for bulk edit quotas -->
+    <div id="bulk-quota-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Bulk Edit Leave Quotas</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <form id="bulk-quota-form">
+                <div class="form-row">
+                    <label for="bulk-member-type">Apply to Member Type</label>
+                    <select id="bulk-member-type">
+                        <option value="mtech">M.Tech Students</option>
+                        <option value="phd">PhD Candidates</option>
+                        <option value="project">Project Staff</option>
+                        <option value="all">All Members</option>
+                    </select>
+                </div>
+                
+                <div class="form-row" id="bulk-mtech-year-container">
+                    <label for="bulk-mtech-year">M.Tech Year (optional)</label>
+                    <select id="bulk-mtech-year">
+                        <option value="all">All Years</option>
+                        <option value="1">First Year</option>
+                        <option value="2">Second Year</option>
+                    </select>
+                </div>
+                
+                <div class="form-row" id="bulk-mtech-spec-container">
+                    <label for="bulk-mtech-spec">M.Tech Specialization (optional)</label>
+                    <select id="bulk-mtech-spec">
+                        <option value="all">All Specializations</option>
+                        <option value="tem">Transportation Engineering</option>
+                        <option value="se">Structural Engineering</option>
+                        <option value="ge">Geotechnical Engineering</option>
+                        <option value="ee">Environmental Engineering</option>
+                    </select>
+                </div>
+                
+                <div class="form-row">
+                    <label for="bulk-casual">Casual Leave Quota (for M.Tech and PhD)</label>
+                    <input type="number" id="bulk-casual" min="0" max="100" placeholder="Leave blank to keep current">
+                </div>
+                
+                <div class="form-row">
+                    <label for="bulk-od">On Duty Quota (for M.Tech and PhD)</label>
+                    <input type="number" id="bulk-od" min="0" max="100" placeholder="Leave blank to keep current">
+                </div>
+                
+                <div class="form-row">
+                    <label for="bulk-rh">Restricted Holiday Quota (for PhD only)</label>
+                    <input type="number" id="bulk-rh" min="0" max="100" placeholder="Leave blank to keep current">
+                </div>
+                
+                <div class="form-row">
+                    <label for="bulk-vacation">Vacation/Medical Leave Quota (for PhD only)</label>
+                    <input type="number" id="bulk-vacation" min="0" max="100" placeholder="Leave blank to keep current">
+                </div>
+                
+                <div class="form-row">
+                    <label for="bulk-total">Total Leave Quota (for Project Staff)</label>
+                    <input type="number" id="bulk-total" min="0" max="365" placeholder="Leave blank to keep current">
+                </div>
+                
+                <div class="form-row">
+                    <label>
+                        <input type="checkbox" id="bulk-reset-balances"> Reset current balances to match new quotas?
+                    </label>
+                </div>
+                
+                <button type="submit">Apply Bulk Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Enhanced Leave Management System &copy; 2025 | Department of Civil Engineering</p>
+    </div>
+
+    <script>
+        // Clean data for all member types
+        const membersData = {
+            "mtech": {
+                "1": {
+                    "ee": [
+                        { id: 1, rollNo: "203425001", name: "ABDULLAH A", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 2, rollNo: "203425002", name: "AFAN SHARIF TAMBOLI", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 3, rollNo: "203425003", name: "AJITHKUMAR S", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 4, rollNo: "203425004", name: "AKHIL M V", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 5, rollNo: "203425005", name: "ANANYA GANESH C", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 6, rollNo: "203425006", name: "ARAVIND SRIVATHSAN A.S", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 7, rollNo: "203425007", name: "ATHIRA P V", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 8, rollNo: "203425008", name: "BESY PRASAD", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 9, rollNo: "203425009", name: "CHRISTO AUGUSTINE", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 10, rollNo: "203425010", name: "FASEEHA IQUBAL", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 11, rollNo: "203425011", name: "HEMANTH KUMAR P S", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 12, rollNo: "203425012", name: "JAMES SAUD", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 13, rollNo: "203425013", name: "KHUSHI RATHOUR", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 14, rollNo: "203425014", name: "NAMAN KOTAK", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 15, rollNo: "203425015", name: "NISHANTH SAMUEL P", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 16, rollNo: "203425016", name: "PATEL KAMIYA GAURANGBHAI", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 17, rollNo: "203425017", name: "PRIYANGA D", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 18, rollNo: "203425018", name: "RAHUL RATHOD", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 19, rollNo: "203425019", name: "REHAN M VARGHESE", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 20, rollNo: "203425020", name: "SATVIK UPADHYAY", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 21, rollNo: "203425021", name: "SHREYA DEV", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 22, rollNo: "203425022", name: "SUCHARITA NAGESH", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 23, rollNo: "203425023", name: "SUDHIN DAS E", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 24, rollNo: "203425024", name: "SUSHMA PANDU", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 25, rollNo: "203425025", name: "VIVEK KUMAR", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 26, rollNo: "203425026", name: "YEEDI MOULIKA GOWRI", casualLeave: 8, onDuty: 15, leaveHistory: [] }
+                    ],
+                    "ge": [
+                        { id: 27, rollNo: "203625001", name: "ABHISHEK CHAUDHARY", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 28, rollNo: "203625002", name: "ADITYA PRASAD SAHOO", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 29, rollNo: "203625003", name: "AFNAS RAHMAN", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 30, rollNo: "203625004", name: "AMAN BHAGAT", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 31, rollNo: "203625005", name: "ANSHU PRIYA", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 32, rollNo: "203625006", name: "A R RESMI", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 33, rollNo: "203625007", name: "ARUN KUMAR SINGH", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 34, rollNo: "203625008", name: "BANTROTHU SYAM BABU", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 35, rollNo: "203625009", name: "BRONSON SINGAM", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 36, rollNo: "203625010", name: "DIYYA VENKATA SIVA KUMAR", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 37, rollNo: "203625011", name: "GOKUL SANTHOSH K M", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 38, rollNo: "203625012", name: "LAKSHMI K PAVANAN", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 39, rollNo: "203625013", name: "MADHAVI MANDARAPU", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 40, rollNo: "203625014", name: "MANO BHARATH P", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 41, rollNo: "203625015", name: "N JEEVITHA", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 42, rollNo: "203625016", name: "PATIL RUSHIKESH YUVARAJ", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 43, rollNo: "203625017", name: "PEDDIREDDY CHETHAN", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 44, rollNo: "203625018", name: "PRADYUMNA KUMAR", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 45, rollNo: "203625019", name: "PRIYAVARSHINI R V", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 46, rollNo: "203625020", name: "RINY BABU", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 47, rollNo: "203625021", name: "SASMITA V", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 48, rollNo: "203625022", name: "YALLA KAMARAJU", casualLeave: 8, onDuty: 15, leaveHistory: [] }
+                    ],
+                    "se": [
+                        { id: 49, rollNo: "203225001", name: "ABHAY PANT", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 50, rollNo: "203225002", name: "ABHILASH T", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 51, rollNo: "203225003", name: "AFLA ANCHALAN", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 52, rollNo: "203225004", name: "ANSA BENNY", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 53, rollNo: "203225005", name: "ANTIM MUJALDE", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 54, rollNo: "203225006", name: "ASWINI PAL", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 55, rollNo: "203225007", name: "BATHUKA SRISHAILAM", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 56, rollNo: "203225008", name: "G ESHITHA", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 57, rollNo: "203225009", name: "GUNDALA ABHINAV VATHAN", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 58, rollNo: "203225010", name: "GURRAM VINEETH KUMAR", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 59, rollNo: "203225011", name: "JAKKALA KIRAN KUMAR", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 60, rollNo: "203225012", name: "JARPULA RAHUL GANDHI", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 61, rollNo: "203225013", name: "JEEVASREE M", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 62, rollNo: "203225014", name: "MEGHA G M", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 63, rollNo: "203225015", name: "NAHEEL MUHAMMED VADAKKE KOTTALATH", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 64, rollNo: "203225016", name: "NAVYA PRASAD A", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 65, rollNo: "203225017", name: "PRANAV PADIDALA", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 66, rollNo: "203225018", name: "PRANAV ROHIDAS CHOUGALE", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 67, rollNo: "203225019", name: "PRITINA BRAHMA", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 68, rollNo: "203225020", name: "RAHUL R R", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 69, rollNo: "203225021", name: "REVATHI PRADEEP", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 70, rollNo: "203225022", name: "RUDAGI DIGGAJA", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 71, rollNo: "203225023", name: "SARAT GIREESH", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 72, rollNo: "203225024", name: "SELVA SARADHI P V", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 73, rollNo: "203225025", name: "SHAHANA SHARIN V", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 74, rollNo: "203225026", name: "SHOWRAV CHOWDHURY", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 75, rollNo: "203225027", name: "SNEESHBASREE M", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 76, rollNo: "203225028", name: "THOSAR ADITYA SHARADRAO", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 77, rollNo: "203225029", name: "V NAVEEN KUMAR REDDY", casualLeave: 8, onDuty: 15, leaveHistory: [] }
+                    ],
+                    "tem": [
+                        { id: 78, rollNo: "203125001", name: "AAKASHDEEP", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 79, rollNo: "203125002", name: "AJAY KUMAR", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 80, rollNo: "203125003", name: "AKASH JOSEPH", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 81, rollNo: "203125004", name: "ARYA", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 82, rollNo: "203125005", name: "AYUSH KANTE", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 83, rollNo: "203125006", name: "CHINTAPALLI JYOTHI", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 84, rollNo: "203125007", name: "GOTTIMUKKALA VENKAT AKSHAY", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 85, rollNo: "203125008", name: "HARSHAVARTHAN LOGANATHAN", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 86, rollNo: "203125009", name: "HEERA NAIR S R", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 87, rollNo: "203125010", name: "HEMA PRIYA S", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 88, rollNo: "203125011", name: "HRIDYA SURESH K", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 89, rollNo: "203125012", name: "KARTHEESWARAN J", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 90, rollNo: "203125013", name: "MYLAPILLI SIVANNARAYANA", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 91, rollNo: "203125014", name: "NAIMISH KUMAR PADHAN", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 92, rollNo: "203125015", name: "NEERAJA R N", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 93, rollNo: "203125016", name: "POOJA PATEL", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 94, rollNo: "203125017", name: "PRATIMA SHUKLA", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 95, rollNo: "203125018", name: "RAHUL MAURYA", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 96, rollNo: "203125019", name: "RAJESH L", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 97, rollNo: "203125020", name: "RAMATHEERTHAM SREEHARI", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 98, rollNo: "203125021", name: "SHILPA S", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 99, rollNo: "203125022", name: "SIDDHARTH BARAD", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 100, rollNo: "203125023", name: "SONAWANE DARSHAN ARUN", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 101, rollNo: "203125024", name: "SREE LAKSHMI LAL P", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 102, rollNo: "203125025", name: "U S AALIYA", casualLeave: 8, onDuty: 15, leaveHistory: [] },
+                        { id: 103, rollNo: "203125026", name: "VIJAYALAKSHMI M A", casualLeave: 8, onDuty: 15, leaveHistory: [] }
+                    ]
+                }
+            },
+            "phd": [
+                { id: 1001, rollNo: "403120001", name: "CHALLA VENKATESWARALU", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1002, rollNo: "403120002", name: "KRISHNA KISHORE M", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1003, rollNo: "403120007", name: "KIRAN PRAKASH K", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1004, rollNo: "403120008", name: "MOHAMMAD FAHEEM", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1005, rollNo: "403120051", name: "CHANDRU S", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1006, rollNo: "403120052", name: "MAVOORI HITESH KUMAR", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1007, rollNo: "403120053", name: "RAMACHANDRAN A", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1008, rollNo: "403121001", name: "JOTHI JEYA SRI M", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1009, rollNo: "403121002", name: "MANJUSHA M", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1010, rollNo: "403121004", name: "RAJU M", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1011, rollNo: "403121005", name: "G SARAVANAN", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1012, rollNo: "403121007", name: "SONKUSARE VISHAL DIWAKAR", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1013, rollNo: "403121010", name: "VIDHYA K", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1014, rollNo: "403121051", name: "ASWIN C P", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1015, rollNo: "403121053", name: "SOPHIA IMMANUEL", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1016, rollNo: "403121054", name: "VENKATA NARESH K", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1017, rollNo: "403122001", name: "AJISHA S", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1018, rollNo: "403122002", name: "BANAVATH PAVAN", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1019, rollNo: "403122004", name: "GOKUL V", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1020, rollNo: "403122005", name: "HENITHA BANUMATHI A", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1021, rollNo: "403122006", name: "MAYILSANKAR B", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1022, rollNo: "403122007", name: "MOHANAPRIYAN M", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1023, rollNo: "403122051", name: "ALOK KUMAR", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1024, rollNo: "403122052", name: "SHATHIKA SULTHANA BEGUM B", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1025, rollNo: "403122053", name: "VASUDHA V", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1026, rollNo: "403123001", name: "ALAGU VENKATESH T", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1027, rollNo: "403123003", name: "BODALA RAMU", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1028, rollNo: "403123004", name: "CHINTHU NARESH", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1029, rollNo: "403123005", name: "KAMARATHI APARNA", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1030, rollNo: "403123006", name: "MARUTHAMUTHU P", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1031, rollNo: "403123007", name: "MUKILAN R", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1032, rollNo: "403123008", name: "VIVEK T", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1033, rollNo: "403124002", name: "ASWATHY K.P", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1034, rollNo: "403124004", name: "GAYATHRI M", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1035, rollNo: "403124005", name: "PRICILLA HYACINTH C", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1036, rollNo: "403124006", name: "PRIYA K", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1037, rollNo: "403124007", name: "SANTHANARAJ S", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1038, rollNo: "403124008", name: "SIVA MANI M", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1039, rollNo: "403124009", name: "SIVA RANJANI S", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1040, rollNo: "403124010", name: "VAISHALI P", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1041, rollNo: "403124051", name: "ABDUL KADER SAJID K S", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1042, rollNo: "403124052", name: "CIOLA RIXY WINSLET", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1043, rollNo: "403124053", name: "PRATHYUSHA NAGENDLA", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1044, rollNo: "403124054", name: "SREE LEKSHMI G.S", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1045, rollNo: "403124055", name: "SUGA PRIYA R", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1046, rollNo: "403125001", name: "ABHIJITH MURALIDHARAN", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1047, rollNo: "403125002", name: "GAUTHAM SRIRAAM A", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1048, rollNo: "403125003", name: "KARAN SAKTHI SM", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1049, rollNo: "403125004", name: "RAJAKUMARI MALARVIZHI S", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] },
+                { id: 1050, rollNo: "403125005", name: "SAHANA SV", casualLeave: 8, rhLeave: 2, vacationLeave: 14, onDuty: 30, leaveHistory: [] }
+            ],
+            "project": [
+                { id: 2001, rollNo: "9770", name: "Mrs.N. Premavathi", totalLeave: 30, leaveHistory: [] },
+                { id: 2002, rollNo: "9791", name: "Mrs.K.Pavithra", totalLeave: 30, leaveHistory: [] },
+                { id: 2003, rollNo: "9826", name: "Mr.S.Karthikeyan", totalLeave: 30, leaveHistory: [] },
+                { id: 2004, rollNo: "9828", name: "Ms.S.Vidya Sankari", totalLeave: 30, leaveHistory: [] },
+                { id: 2005, rollNo: "9829", name: "Mr.M.Muneeskumar", totalLeave: 30, leaveHistory: [] },
+                { id: 2006, rollNo: "9830", name: "Mrs.M.Pavithra", totalLeave: 30, leaveHistory: [] },
+                { id: 2007, rollNo: "9878", name: "Mr.K.Chinnaraj", totalLeave: 30, leaveHistory: [] }
+            ]
+        };
+
+        // Office staff credentials
+        const staffCredentials = {
+            username: "office",
+            password: "staff123"
+        };
+
+        // DOM elements
+        const loginSection = document.getElementById('login-section');
+        const staffDashboard = document.getElementById('staff-dashboard');
+        const studentDashboard = document.getElementById('student-dashboard');
+        const phdDashboard = document.getElementById('phd-dashboard');
+        const projectDashboard = document.getElementById('project-dashboard');
+        const staffLoginForm = document.getElementById('staff-login-form');
+        const studentLoginForm = document.getElementById('student-login-form');
+        const phdLoginForm = document.getElementById('phd-login-form');
+        const projectLoginForm = document.getElementById('project-login-form');
+        const staffLogoutBtn = document.getElementById('staff-logout');
+        const studentLogoutBtn = document.getElementById('student-logout');
+        const phdLogoutBtn = document.getElementById('phd-logout');
+        const projectLogoutBtn = document.getElementById('project-logout');
+        const memberTypeSelect = document.getElementById('member-type');
+        const yearSelect = document.getElementById('year-select');
+        const specializationSelect = document.getElementById('specialization-select');
+        const loadMembersBtn = document.getElementById('load-members');
+        const memberContainer = document.getElementById('member-container');
+        const allMembersContainer = document.getElementById('all-members-container');
+        const leaveModal = document.getElementById('leave-modal');
+        const editLeaveModal = document.getElementById('edit-leave-modal');
+        const editQuotaModal = document.getElementById('edit-quota-modal');
+        const bulkQuotaModal = document.getElementById('bulk-quota-modal');
+        const closeModalBtns = document.querySelectorAll('.close-btn');
+        const leaveForm = document.getElementById('leave-form');
+        const editLeaveForm = document.getElementById('edit-leave-form');
+        const editQuotaForm = document.getElementById('edit-quota-form');
+        const bulkQuotaForm = document.getElementById('bulk-quota-form');
+        const deleteLeaveBtn = document.getElementById('delete-leave-btn');
+        const modalTitle = document.getElementById('modal-title');
+        const memberIdInput = document.getElementById('member-id');
+        const memberTypeInput = document.getElementById('member-type-input');
+        const leaveTypeInput = document.getElementById('leave-type');
+        const fromDateInput = document.getElementById('from-date');
+        const toDateInput = document.getElementById('to-date');
+        const editLeaveIdInput = document.getElementById('edit-leave-id');
+        const editMemberIdInput = document.getElementById('edit-member-id');
+        const editMemberTypeInput = document.getElementById('edit-member-type');
+        const editLeaveTypeInput = document.getElementById('edit-leave-type');
+        const editFromDateInput = document.getElementById('edit-from-date');
+        const editToDateInput = document.getElementById('edit-to-date');
+        const editReasonInput = document.getElementById('edit-reason');
+        const quotaMemberIdInput = document.getElementById('quota-member-id');
+        const quotaMemberTypeInput = document.getElementById('quota-member-type');
+        const quotaMemberRollInput = document.getElementById('quota-member-roll');
+        const quotaMemberNameInput = document.getElementById('quota-member-name');
+        const quotaCasualInput = document.getElementById('quota-casual');
+        const quotaOdInput = document.getElementById('quota-od');
+        const quotaRhInput = document.getElementById('quota-rh');
+        const quotaVacationInput = document.getElementById('quota-vacation');
+        const quotaTotalInput = document.getElementById('quota-total');
+        const quotaRhContainer = document.getElementById('quota-rh-container');
+        const quotaVacationContainer = document.getElementById('quota-vacation-container');
+        const quotaTotalContainer = document.getElementById('quota-total-container');
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const studentNameElement = document.getElementById('student-name');
+        const studentCasualBalanceElement = document.getElementById('student-casual-balance');
+        const studentOdBalanceElement = document.getElementById('student-od-balance');
+        const studentTotalLeavesElement = document.getElementById('student-total-leaves');
+        const studentLeaveHistoryElement = document.getElementById('student-leave-history');
+        const phdNameElement = document.getElementById('phd-name');
+        const phdCasualBalanceElement = document.getElementById('phd-casual-balance');
+        const phdRhBalanceElement = document.getElementById('phd-rh-balance');
+        const phdVacationBalanceElement = document.getElementById('phd-vacation-balance');
+        const phdOdBalanceElement = document.getElementById('phd-od-balance');
+        const phdLeaveHistoryElement = document.getElementById('phd-leave-history');
+        const projectNameElement = document.getElementById('project-name');
+        const projectTotalBalanceElement = document.getElementById('project-total-balance');
+        const projectLeavesTakenElement = document.getElementById('project-leaves-taken');
+        const projectAvailableBalanceElement = document.getElementById('project-available-balance');
+        const projectLeaveHistoryElement = document.getElementById('project-leave-history');
+        const totalMembersElement = document.getElementById('total-members');
+        const leavesThisMonthElement = document.getElementById('leaves-this-month');
+        const pendingApprovalsElement = document.getElementById('pending-approvals');
+        const filterMemberTypeSelect = document.getElementById('filter-member-type');
+        const filterYearSelect = document.getElementById('filter-year');
+        const filterSpecializationSelect = document.getElementById('filter-specialization');
+        const applyFiltersBtn = document.getElementById('apply-filters');
+        const startDateInput = document.getElementById('start-date');
+        const endDateInput = document.getElementById('end-date');
+        const applyDateFilterBtn = document.getElementById('apply-date-filter');
+        const filterMemberTypeDateSelect = document.getElementById('filter-member-type-date');
+        const dateFilterResults = document.getElementById('date-filter-results');
+        const phdFilterSelect = document.getElementById('phd-filter');
+        const loadPhdCandidatesBtn = document.getElementById('load-phd-candidates');
+        const phdContainer = document.getElementById('phd-container');
+        const quickStatsBtn = document.getElementById('quick-stats-btn');
+        const editQuotaBtn = document.getElementById('edit-quota-btn');
+        const bulkEditBtn = document.getElementById('bulk-edit-btn');
+        const exportDataBtn = document.getElementById('export-data-btn');
+        const refreshDataBtn = document.getElementById('refresh-data-btn');
+        const quotaMemberTypeSelect = document.getElementById('quota-member-type');
+        const quotaYearSelect = document.getElementById('quota-year');
+        const quotaSpecializationSelect = document.getElementById('quota-specialization');
+        const searchMemberInput = document.getElementById('search-member');
+        const loadForQuotaEditBtn = document.getElementById('load-for-quota-edit');
+        const applyBulkQuotaBtn = document.getElementById('apply-bulk-quota');
+        const quotaEditContainer = document.getElementById('quota-edit-container');
+        const bulkMemberTypeSelect = document.getElementById('bulk-member-type');
+        const bulkMtechYearContainer = document.getElementById('bulk-mtech-year-container');
+        const bulkMtechSpecContainer = document.getElementById('bulk-mtech-spec-container');
+        const bulkMtechYearSelect = document.getElementById('bulk-mtech-year');
+        const bulkMtechSpecSelect = document.getElementById('bulk-mtech-spec');
+        const bulkCasualInput = document.getElementById('bulk-casual');
+        const bulkOdInput = document.getElementById('bulk-od');
+        const bulkRhInput = document.getElementById('bulk-rh');
+        const bulkVacationInput = document.getElementById('bulk-vacation');
+        const bulkTotalInput = document.getElementById('bulk-total');
+        const bulkResetBalancesCheckbox = document.getElementById('bulk-reset-balances');
+
+        // Current user
+        let currentUser = null;
+
+        // Event listeners
+        staffLoginForm.addEventListener('submit', staffLogin);
+        studentLoginForm.addEventListener('submit', studentLogin);
+        phdLoginForm.addEventListener('submit', phdLogin);
+        projectLoginForm.addEventListener('submit', projectLogin);
+        staffLogoutBtn.addEventListener('click', logout);
+        studentLogoutBtn.addEventListener('click', logout);
+        phdLogoutBtn.addEventListener('click', logout);
+        projectLogoutBtn.addEventListener('click', logout);
+        memberTypeSelect.addEventListener('change', function() {
+            if (this.value === 'mtech') {
+                yearSelect.disabled = false;
+                specializationSelect.disabled = false;
+            } else {
+                yearSelect.disabled = true;
+                specializationSelect.disabled = true;
+            }
+            loadMembersBtn.disabled = !this.value;
+        });
+        yearSelect.addEventListener('change', function() {
+            specializationSelect.disabled = !this.value;
+        });
+        loadMembersBtn.addEventListener('click', loadMembers);
+        closeModalBtns.forEach(btn => btn.addEventListener('click', closeModal));
+        leaveForm.addEventListener('submit', submitLeave);
+        editLeaveForm.addEventListener('submit', updateLeave);
+        deleteLeaveBtn.addEventListener('click', deleteLeave);
+        editQuotaForm.addEventListener('submit', updateQuota);
+        bulkQuotaForm.addEventListener('submit', applyBulkQuotaChanges);
+        tabs.forEach(tab => tab.addEventListener('click', switchTab));
+        applyFiltersBtn.addEventListener('click', loadAllMembers);
+        applyDateFilterBtn.addEventListener('click', applyDateFilter);
+        loadPhdCandidatesBtn.addEventListener('click', loadPhdCandidates);
+        quickStatsBtn.addEventListener('click', showQuickStats);
+        editQuotaBtn.addEventListener('click', function() {
+            switchTabManual('edit-quotas');
+        });
+        bulkEditBtn.addEventListener('click', openBulkQuotaModal);
+        exportDataBtn.addEventListener('click', exportData);
+        refreshDataBtn.addEventListener('click', refreshData);
+        loadForQuotaEditBtn.addEventListener('click', loadMembersForQuotaEdit);
+        applyBulkQuotaBtn.addEventListener('click', openBulkQuotaModal);
+        quotaMemberTypeSelect.addEventListener('change', function() {
+            if (this.value === 'mtech') {
+                quotaYearSelect.disabled = false;
+                quotaSpecializationSelect.disabled = false;
+            } else {
+                quotaYearSelect.disabled = true;
+                quotaSpecializationSelect.disabled = true;
+            }
+        });
+        bulkMemberTypeSelect.addEventListener('change', function() {
+            if (this.value === 'mtech' || this.value === 'all') {
+                bulkMtechYearContainer.style.display = 'block';
+                bulkMtechSpecContainer.style.display = 'block';
+            } else {
+                bulkMtechYearContainer.style.display = 'none';
+                bulkMtechSpecContainer.style.display = 'none';
+            }
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target === leaveModal) closeModal();
+            if (event.target === editLeaveModal) closeModal();
+            if (event.target === editQuotaModal) closeModal();
+            if (event.target === bulkQuotaModal) closeModal();
+        });
+
+        // Functions
+        function staffLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('staff-username').value;
+            const password = document.getElementById('staff-password').value;
+            
+            if (username === staffCredentials.username && password === staffCredentials.password) {
+                currentUser = { type: 'staff', username: username };
+                loginSection.style.display = 'none';
+                staffDashboard.style.display = 'block';
+                loadAllMembers();
+            } else {
+                alert('Invalid username or password');
+            }
+        }
+
+        function studentLogin(e) {
+            e.preventDefault();
+            const rollNo = document.getElementById('student-roll').value.toUpperCase();
+            
+            let student = null;
+            for (const year in membersData.mtech) {
+                for (const spec in membersData.mtech[year]) {
+                    const foundStudent = membersData.mtech[year][spec].find(s => s.rollNo === rollNo);
+                    if (foundStudent) {
+                        student = foundStudent;
+                        break;
+                    }
+                }
+                if (student) break;
+            }
+            
+            if (student) {
+                currentUser = { type: 'mtech', ...student };
+                loginSection.style.display = 'none';
+                studentDashboard.style.display = 'block';
+                displayStudentDashboard(student);
+            } else {
+                alert('M.Tech student not found with this roll number');
+            }
+        }
+
+        function phdLogin(e) {
+            e.preventDefault();
+            const rollNo = document.getElementById('phd-roll').value.toUpperCase();
+            
+            const phd = membersData.phd.find(p => p.rollNo === rollNo);
+            
+            if (phd) {
+                currentUser = { type: 'phd', ...phd };
+                loginSection.style.display = 'none';
+                phdDashboard.style.display = 'block';
+                displayPhdDashboard(phd);
+            } else {
+                alert('PhD candidate not found with this ID');
+            }
+        }
+
+        function projectLogin(e) {
+            e.preventDefault();
+            const rollNo = document.getElementById('project-roll').value.toUpperCase();
+            
+            const projectStaff = membersData.project.find(p => p.rollNo === rollNo);
+            
+            if (projectStaff) {
+                currentUser = { type: 'project', ...projectStaff };
+                loginSection.style.display = 'none';
+                projectDashboard.style.display = 'block';
+                displayProjectDashboard(projectStaff);
+            } else {
+                alert('Project staff not found with this ID');
+            }
+        }
+
+        function displayStudentDashboard(student) {
+            studentNameElement.textContent = student.name;
+            studentCasualBalanceElement.textContent = student.casualLeave;
+            studentOdBalanceElement.textContent = student.onDuty;
+            studentTotalLeavesElement.textContent = student.leaveHistory.length;
+            
+            if (student.leaveHistory.length > 0) {
+                studentLeaveHistoryElement.innerHTML = student.leaveHistory.map(leave => `
+                    <div class="history-item">
+                        <div>
+                            <div><strong>${leave.fromDate} to ${leave.toDate}</strong> (${leave.days} day(s))</div>
+                            <div style="font-size: 0.8rem; color: #7f8c8d;">${leave.reason || 'No reason provided'}</div>
+                        </div>
+                        <span class="leave-type type-${leave.type}">${leave.type.toUpperCase()}</span>
+                    </div>
+                `).join('');
+            } else {
+                studentLeaveHistoryElement.innerHTML = '<div style="text-align: center; color: #7f8c8d; padding: 10px;">No leave history</div>';
+            }
+        }
+
+        function displayPhdDashboard(phd) {
+            phdNameElement.textContent = phd.name;
+            phdCasualBalanceElement.textContent = phd.casualLeave;
+            phdRhBalanceElement.textContent = phd.rhLeave;
+            phdVacationBalanceElement.textContent = phd.vacationLeave;
+            phdOdBalanceElement.textContent = phd.onDuty;
+            
+            if (phd.leaveHistory.length > 0) {
+                phdLeaveHistoryElement.innerHTML = phd.leaveHistory.map(leave => `
+                    <div class="history-item">
+                        <div>
+                            <div><strong>${leave.fromDate} to ${leave.toDate}</strong> (${leave.days} day(s))</div>
+                            <div style="font-size: 0.8rem; color: #7f8c8d;">${leave.reason || 'No reason provided'}</div>
+                        </div>
+                        <span class="leave-type type-${leave.type}">${leave.type.toUpperCase()}</span>
+                    </div>
+                `).join('');
+            } else {
+                phdLeaveHistoryElement.innerHTML = '<div style="text-align: center; color: #7f8c8d; padding: 10px;">No leave history</div>';
+            }
+        }
+
+        function displayProjectDashboard(projectStaff) {
+            projectNameElement.textContent = projectStaff.name;
+            projectTotalBalanceElement.textContent = projectStaff.totalLeave;
+            
+            const leavesTaken = projectStaff.leaveHistory.reduce((total, leave) => total + leave.days, 0);
+            projectLeavesTakenElement.textContent = leavesTaken;
+            projectAvailableBalanceElement.textContent = projectStaff.totalLeave - leavesTaken;
+            
+            if (projectStaff.leaveHistory.length > 0) {
+                projectLeaveHistoryElement.innerHTML = projectStaff.leaveHistory.map(leave => `
+                    <div class="history-item">
+                        <div>
+                            <div><strong>${leave.fromDate} to ${leave.toDate}</strong> (${leave.days} day(s))</div>
+                            <div style="font-size: 0.8rem; color: #7f8c8d;">${leave.reason || 'No reason provided'}</div>
+                        </div>
+                        <span class="leave-type type-${leave.type}">${leave.type.toUpperCase()}</span>
+                    </div>
+                `).join('');
+            } else {
+                projectLeaveHistoryElement.innerHTML = '<div style="text-align: center; color: #7f8c8d; padding: 10px;">No leave history</div>';
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            staffDashboard.style.display = 'none';
+            studentDashboard.style.display = 'none';
+            phdDashboard.style.display = 'none';
+            projectDashboard.style.display = 'none';
+            loginSection.style.display = 'grid';
+            staffLoginForm.reset();
+            studentLoginForm.reset();
+            phdLoginForm.reset();
+            projectLoginForm.reset();
+        }
+
+        function switchTab(e) {
+            const tabId = e.target.getAttribute('data-tab');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            e.target.classList.add('active');
+            
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+                if (content.id === tabId) {
+                    content.classList.add('active');
+                }
+            });
+            
+            if (tabId === 'view-members') {
+                loadAllMembers();
+            } else if (tabId === 'phd-scholar') {
+                loadPhdCandidates();
+            } else if (tabId === 'edit-quotas') {
+                loadMembersForQuotaEdit();
+            }
+        }
+
+        function switchTabManual(tabId) {
+            tabs.forEach(tab => tab.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            const tabElement = document.querySelector(`.tab[data-tab="${tabId}"]`);
+            const contentElement = document.getElementById(tabId);
+            
+            if (tabElement) tabElement.classList.add('active');
+            if (contentElement) contentElement.classList.add('active');
+            
+            if (tabId === 'edit-quotas') {
+                loadMembersForQuotaEdit();
+            }
+        }
+
+        function loadMembers() {
+            const memberType = memberTypeSelect.value;
+            const year = yearSelect.value;
+            const specialization = specializationSelect.value;
+            
+            if (!memberType) return;
+            
+            let members = [];
+            
+            if (memberType === 'mtech') {
+                if (!year || !specialization) return;
+                members = membersData.mtech[year][specialization];
+            } else if (memberType === 'phd') {
+                members = membersData.phd;
+            } else if (memberType === 'project') {
+                members = membersData.project;
+            }
+            
+            memberContainer.innerHTML = '';
+            
+            members.forEach(member => {
+                const memberCard = createMemberCard(member, memberType, true);
+                memberContainer.appendChild(memberCard);
+            });
+        }
+
+        function loadAllMembers() {
+            const memberTypeFilter = filterMemberTypeSelect.value;
+            const yearFilter = filterYearSelect.value;
+            const specFilter = filterSpecializationSelect.value;
+            
+            allMembersContainer.innerHTML = '';
+            let totalMembers = 0;
+            let leavesThisMonth = 0;
+            let pendingApprovals = 0;
+            
+            if (memberTypeFilter === 'all' || memberTypeFilter === 'mtech') {
+                for (const year in membersData.mtech) {
+                    if (yearFilter !== 'all' && year !== yearFilter) continue;
+                    
+                    for (const spec in membersData.mtech[year]) {
+                        if (specFilter !== 'all' && spec !== specFilter) continue;
+                        
+                        const students = membersData.mtech[year][spec];
+                        totalMembers += students.length;
+                        
+                        students.forEach(student => {
+                            student.leaveHistory.forEach(leave => {
+                                if (leave.fromDate.startsWith('2025-09')) {
+                                    leavesThisMonth++;
+                                }
+                            });
+                            
+                            const memberCard = createMemberCard(student, 'mtech', false);
+                            allMembersContainer.appendChild(memberCard);
+                        });
+                    }
+                }
+            }
+            
+            if (memberTypeFilter === 'all' || memberTypeFilter === 'phd') {
+                membersData.phd.forEach(phd => {
+                    totalMembers++;
+                    
+                    phd.leaveHistory.forEach(leave => {
+                        if (leave.fromDate.startsWith('2025-09')) {
+                            leavesThisMonth++;
+                        }
+                    });
+                    
+                    const memberCard = createMemberCard(phd, 'phd', false);
+                    allMembersContainer.appendChild(memberCard);
+                });
+            }
+            
+            if (memberTypeFilter === 'all' || memberTypeFilter === 'project') {
+                membersData.project.forEach(projectStaff => {
+                    totalMembers++;
+                    
+                    projectStaff.leaveHistory.forEach(leave => {
+                        if (leave.fromDate.startsWith('2025-09')) {
+                            leavesThisMonth++;
+                        }
+                    });
+                    
+                    const memberCard = createMemberCard(projectStaff, 'project', false);
+                    allMembersContainer.appendChild(memberCard);
+                });
+            }
+            
+            totalMembersElement.textContent = totalMembers;
+            leavesThisMonthElement.textContent = leavesThisMonth;
+            pendingApprovalsElement.textContent = pendingApprovals;
+        }
+
+        function loadPhdCandidates() {
+            const filter = phdFilterSelect.value;
+            
+            phdContainer.innerHTML = '';
+            
+            membersData.phd.forEach(phd => {
+                const memberCard = createMemberCard(phd, 'phd', true);
+                phdContainer.appendChild(memberCard);
+            });
+        }
+
+        function loadMembersForQuotaEdit() {
+            const memberType = quotaMemberTypeSelect.value;
+            const year = quotaYearSelect.value;
+            const specialization = quotaSpecializationSelect.value;
+            const searchTerm = searchMemberInput.value.toLowerCase();
+            
+            quotaEditContainer.innerHTML = '';
+            let members = [];
+            
+            if (memberType === 'mtech') {
+                if (specialization === 'all') {
+                    for (const spec in membersData.mtech[year]) {
+                        members = members.concat(membersData.mtech[year][spec]);
+                    }
+                } else {
+                    members = membersData.mtech[year][specialization];
+                }
+            } else if (memberType === 'phd') {
+                members = membersData.phd;
+            } else if (memberType === 'project') {
+                members = membersData.project;
+            }
+            
+            if (searchTerm) {
+                members = members.filter(member => 
+                    member.name.toLowerCase().includes(searchTerm) || 
+                    member.rollNo.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            members.forEach(member => {
+                const quotaCard = createQuotaEditCard(member, memberType);
+                quotaEditContainer.appendChild(quotaCard);
+            });
+        }
+
+        function createMemberCard(member, memberType, showActions = true) {
+            const memberCard = document.createElement('div');
+            
+            if (memberType === 'mtech') {
+                memberCard.className = 'member-card mtech-card';
+            } else if (memberType === 'phd') {
+                memberCard.className = 'member-card phd-card-member';
+            } else if (memberType === 'project') {
+                memberCard.className = 'member-card project-card-member';
+            }
+            
+            let balanceHTML = '';
+            if (memberType === 'mtech') {
+                balanceHTML = `
+                    <div class="balance-item">
+                        <div class="balance-label">Casual Leave</div>
+                        <div class="balance-value casual-balance">${member.casualLeave}</div>
+                    </div>
+                    <div class="balance-item">
+                        <div class="balance-label">On Duty</div>
+                        <div class="balance-value od-balance">${member.onDuty}</div>
+                    </div>
+                `;
+            } else if (memberType === 'phd') {
+                balanceHTML = `
+                    <div class="balance-item">
+                        <div class="balance-label">Casual Leave</div>
+                        <div class="balance-value casual-balance">${member.casualLeave}</div>
+                    </div>
+                    <div class="balance-item">
+                        <div class="balance-label">Restricted Holiday</div>
+                        <div class="balance-value rh-balance">${member.rhLeave}</div>
+                    </div>
+                    <div class="balance-item">
+                        <div class="balance-label">Vacation/Medical</div>
+                        <div class="balance-value vacation-balance">${member.vacationLeave}</div>
+                    </div>
+                    <div class="balance-item">
+                        <div class="balance-label">On Duty</div>
+                        <div class="balance-value od-balance">${member.onDuty}</div>
+                    </div>
+                `;
+            } else if (memberType === 'project') {
+                const leavesTaken = member.leaveHistory.reduce((total, leave) => total + leave.days, 0);
+                balanceHTML = `
+                    <div class="balance-item">
+                        <div class="balance-label">Total Leave</div>
+                        <div class="balance-value vacation-balance">${member.totalLeave}</div>
+                    </div>
+                    <div class="balance-item">
+                        <div class="balance-label">Leaves Taken</div>
+                        <div class="balance-value">${leavesTaken}</div>
+                    </div>
+                `;
+            }
+            
+            const leaveHistoryHTML = member.leaveHistory.length > 0 
+                ? member.leaveHistory.map(leave => `
+                    <div class="history-item">
+                        <div>
+                            <div>${leave.fromDate} to ${leave.toDate}</div>
+                            <div style="font-size: 0.8rem; color: #7f8c8d;">${leave.reason || 'No reason provided'}</div>
+                        </div>
+                        <div>
+                            <span class="leave-type type-${leave.type}">${leave.type.toUpperCase()}</span>
+                            ${showActions ? `<button class="btn-casual" style="width: auto; padding: 3px 8px; margin-left: 5px; font-size: 0.7rem;" data-member-id="${member.id}" data-member-type="${memberType}" data-leave-id="${leave.id}">Edit</button>` : ''}
+                        </div>
+                    </div>
+                `).join('')
+                : '<div style="text-align: center; color: #7f8c8d; padding: 10px;">No leave history</div>';
+            
+            let actionButtonsHTML = '';
+            if (showActions) {
+                if (memberType === 'mtech') {
+                    actionButtonsHTML = `
+                        <div class="action-buttons">
+                            <button class="btn-casual" data-id="${member.id}" data-type="casual" data-member-type="${memberType}">Casual Leave</button>
+                            <button class="btn-od" data-id="${member.id}" data-type="od" data-member-type="${memberType}">On Duty</button>
+                        </div>
+                    `;
+                } else if (memberType === 'phd') {
+                    actionButtonsHTML = `
+                        <div class="action-buttons phd-actions">
+                            <button class="btn-casual" data-id="${member.id}" data-type="casual" data-member-type="${memberType}">Casual Leave</button>
+                            <button class="btn-rh" data-id="${member.id}" data-type="rh" data-member-type="${memberType}">Restricted Holiday</button>
+                            <button class="btn-vacation" data-id="${member.id}" data-type="vacation" data-member-type="${memberType}">Vacation/Medical</button>
+                            <button class="btn-od" data-id="${member.id}" data-type="od" data-member-type="${memberType}">On Duty</button>
+                        </div>
+                    `;
+                } else if (memberType === 'project') {
+                    actionButtonsHTML = `
+                        <div class="action-buttons project-actions">
+                            <button class="btn-vacation" data-id="${member.id}" data-type="vacation" data-member-type="${memberType}">Apply Leave</button>
+                        </div>
+                    `;
+                }
+            }
+            
+            memberCard.innerHTML = `
+                <div class="member-header">
+                    <div class="member-name">${member.name}</div>
+                    <div class="member-roll">${member.rollNo}</div>
+                </div>
+                
+                <div class="leave-balance">
+                    ${balanceHTML}
+                </div>
+                
+                ${actionButtonsHTML}
+                
+                <div class="leave-history">
+                    <div class="history-title">Leave History</div>
+                    <div class="history-list">
+                        ${leaveHistoryHTML}
+                    </div>
+                </div>
+            `;
+            
+            if (showActions) {
+                memberCard.querySelectorAll('.btn-casual, .btn-od, .btn-rh, .btn-vacation').forEach(button => {
+                    if (!button.dataset.leaveId) {
+                        button.addEventListener('click', function() {
+                            openModal(this.dataset.id, this.dataset.type, this.dataset.memberType);
+                        });
+                    }
+                });
+                
+                memberCard.querySelectorAll('.btn-casual[data-leave-id]').forEach(button => {
+                    button.addEventListener('click', function() {
+                        openEditModal(this.dataset.memberId, this.dataset.leaveId, this.dataset.memberType);
+                    });
+                });
+            }
+            
+            return memberCard;
+        }
+
+        function createQuotaEditCard(member, memberType) {
+            const quotaCard = document.createElement('div');
+            quotaCard.className = 'member-card';
+            
+            let quotaInfoHTML = '';
+            let editButtonText = 'Edit Quota';
+            
+            if (memberType === 'mtech') {
+                quotaInfoHTML = `
+                    <div class="balance-item">
+                        <div class="balance-label">Casual Leave</div>
+                        <div class="balance-value casual-balance">${member.casualLeave}</div>
+                    </div>
+                    <div class="balance-item">
+                        <div class="balance-label">On Duty</div>
+                        <div class="balance-value od-balance">${member.onDuty}</div>
+                    </div>
+                `;
+                editButtonText = 'Edit CL & OD';
+            } else if (memberType === 'phd') {
+                quotaInfoHTML = `
+                    <div class="balance-item">
+                        <div class="balance-label">Casual Leave</div>
+                        <div class="balance-value casual-balance">${member.casualLeave}</div>
+                    </div>
+                    <div class="balance-item">
+                        <div class="balance-label">Restricted Holiday</div>
+                        <div class="balance-value rh-balance">${member.rhLeave}</div>
+                    </div>
+                    <div class="balance-item">
+                        <div class="balance-label">Vacation/Medical</div>
+                        <div class="balance-value vacation-balance">${member.vacationLeave}</div>
+                    </div>
+                    <div class="balance-item">
+                        <div class="balance-label">On Duty</div>
+                        <div class="balance-value od-balance">${member.onDuty}</div>
+                    </div>
+                `;
+                editButtonText = 'Edit All Quotas';
+            } else if (memberType === 'project') {
+                quotaInfoHTML = `
+                    <div class="balance-item">
+                        <div class="balance-label">Total Leave</div>
+                        <div class="balance-value vacation-balance">${member.totalLeave}</div>
+                    </div>
+                `;
+                editButtonText = 'Edit Total Leave';
+            }
+            
+            quotaCard.innerHTML = `
+                <div class="member-header">
+                    <div class="member-name">${member.name}</div>
+                    <div class="member-roll">${member.rollNo}</div>
+                </div>
+                
+                <div class="leave-balance">
+                    ${quotaInfoHTML}
+                </div>
+                
+                <button class="edit-quota-btn" data-id="${member.id}" data-type="${memberType}">${editButtonText}</button>
+            `;
+            
+            quotaCard.querySelector('.edit-quota-btn').addEventListener('click', function() {
+                openEditQuotaModal(this.dataset.id, this.dataset.type);
+            });
+            
+            return quotaCard;
+        }
+
+        function openModal(memberId, leaveType, memberType) {
+            const member = findMemberById(memberId, memberType);
+            if (!member) return;
+            
+            memberIdInput.value = memberId;
+            memberTypeInput.value = memberType;
+            leaveTypeInput.value = leaveType;
+            
+            let leaveTypeText = '';
+            if (leaveType === 'casual') leaveTypeText = 'Casual Leave';
+            else if (leaveType === 'od') leaveTypeText = 'On Duty';
+            else if (leaveType === 'rh') leaveTypeText = 'Restricted Holiday';
+            else if (leaveType === 'vacation') leaveTypeText = 'Vacation/Medical Leave';
+            
+            modalTitle.textContent = `Apply ${leaveTypeText} for ${member.name}`;
+            
+            leaveForm.reset();
+            const today = new Date().toISOString().split('T')[0];
+            fromDateInput.value = today;
+            
+            leaveModal.style.display = 'flex';
+        }
+
+        function openEditModal(memberId, leaveId, memberType) {
+            const member = findMemberById(memberId, memberType);
+            if (!member) return;
+            
+            const leave = member.leaveHistory.find(l => l.id == leaveId);
+            if (!leave) return;
+            
+            editLeaveIdInput.value = leaveId;
+            editMemberIdInput.value = memberId;
+            editMemberTypeInput.value = memberType;
+            editLeaveTypeInput.value = leave.type;
+            editFromDateInput.value = leave.fromDate;
+            editToDateInput.value = leave.toDate;
+            editReasonInput.value = leave.reason || '';
+            
+            editLeaveModal.style.display = 'flex';
+        }
+
+        function openEditQuotaModal(memberId, memberType) {
+            const member = findMemberById(memberId, memberType);
+            if (!member) return;
+            
+            quotaMemberIdInput.value = memberId;
+            quotaMemberTypeInput.value = memberType;
+            quotaMemberRollInput.value = member.rollNo;
+            quotaMemberNameInput.value = member.name;
+            
+            // Show/hide fields based on member type
+            if (memberType === 'mtech') {
+                quotaCasualInput.value = member.casualLeave;
+                quotaOdInput.value = member.onDuty;
+                quotaRhContainer.style.display = 'none';
+                quotaVacationContainer.style.display = 'none';
+                quotaTotalContainer.style.display = 'none';
+            } else if (memberType === 'phd') {
+                quotaCasualInput.value = member.casualLeave;
+                quotaOdInput.value = member.onDuty;
+                quotaRhInput.value = member.rhLeave;
+                quotaVacationInput.value = member.vacationLeave;
+                quotaRhContainer.style.display = 'block';
+                quotaVacationContainer.style.display = 'block';
+                quotaTotalContainer.style.display = 'none';
+            } else if (memberType === 'project') {
+                quotaTotalInput.value = member.totalLeave;
+                quotaRhContainer.style.display = 'none';
+                quotaVacationContainer.style.display = 'none';
+                quotaTotalContainer.style.display = 'block';
+            }
+            
+            editQuotaModal.style.display = 'flex';
+        }
+
+        function openBulkQuotaModal() {
+            // Reset form
+            bulkQuotaForm.reset();
+            bulkMtechYearContainer.style.display = 'none';
+            bulkMtechSpecContainer.style.display = 'none';
+            
+            bulkQuotaModal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            leaveModal.style.display = 'none';
+            editLeaveModal.style.display = 'none';
+            editQuotaModal.style.display = 'none';
+            bulkQuotaModal.style.display = 'none';
+        }
+
+        function submitLeave(e) {
+            e.preventDefault();
+            
+            const memberId = memberIdInput.value;
+            const memberType = memberTypeInput.value;
+            const leaveType = leaveTypeInput.value;
+            const fromDate = fromDateInput.value;
+            const toDate = toDateInput.value;
+            const reason = document.getElementById('reason').value;
+            
+            if (!fromDate || !toDate) {
+                alert('Please select both from and to dates');
+                return;
+            }
+            
+            const from = new Date(fromDate);
+            const to = new Date(toDate);
+            const timeDiff = to.getTime() - from.getTime();
+            const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
+            
+            if (daysDiff <= 0) {
+                alert('To date must be after from date');
+                return;
+            }
+            
+            const member = findMemberById(memberId, memberType);
+            if (!member) return;
+            
+            if (memberType === 'mtech') {
+                if (leaveType === 'casual' && member.casualLeave < daysDiff) {
+                    alert(`Not enough casual leave balance. Available: ${member.casualLeave}, Requested: ${daysDiff}`);
+                    return;
+                }
+                if (leaveType === 'od' && member.onDuty < daysDiff) {
+                    alert(`Not enough on duty balance. Available: ${member.onDuty}, Requested: ${daysDiff}`);
+                    return;
+                }
+            } else if (memberType === 'phd') {
+                if (leaveType === 'casual' && member.casualLeave < daysDiff) {
+                    alert(`Not enough casual leave balance. Available: ${member.casualLeave}, Requested: ${daysDiff}`);
+                    return;
+                }
+                if (leaveType === 'rh' && member.rhLeave < daysDiff) {
+                    alert(`Not enough restricted holiday balance. Available: ${member.rhLeave}, Requested: ${daysDiff}`);
+                    return;
+                }
+                if (leaveType === 'vacation' && member.vacationLeave < daysDiff) {
+                    alert(`Not enough vacation/medical leave balance. Available: ${member.vacationLeave}, Requested: ${daysDiff}`);
+                    return;
+                }
+                if (leaveType === 'od' && member.onDuty < daysDiff) {
+                    alert(`Not enough on duty balance. Available: ${member.onDuty}, Requested: ${daysDiff}`);
+                    return;
+                }
+            } else if (memberType === 'project') {
+                const leavesTaken = member.leaveHistory.reduce((total, leave) => total + leave.days, 0);
+                if (leavesTaken + daysDiff > member.totalLeave) {
+                    alert(`Not enough leave balance. Available: ${member.totalLeave - leavesTaken}, Requested: ${daysDiff}`);
+                    return;
+                }
+            }
+            
+            if (memberType === 'mtech') {
+                if (leaveType === 'casual') {
+                    member.casualLeave -= daysDiff;
+                } else if (leaveType === 'od') {
+                    member.onDuty -= daysDiff;
+                }
+            } else if (memberType === 'phd') {
+                if (leaveType === 'casual') {
+                    member.casualLeave -= daysDiff;
+                } else if (leaveType === 'rh') {
+                    member.rhLeave -= daysDiff;
+                } else if (leaveType === 'vacation') {
+                    member.vacationLeave -= daysDiff;
+                } else if (leaveType === 'od') {
+                    member.onDuty -= daysDiff;
+                }
+            }
+            
+            member.leaveHistory.unshift({
+                id: Date.now(),
+                type: leaveType,
+                fromDate: fromDate,
+                toDate: toDate,
+                days: daysDiff,
+                reason: reason,
+                appliedDate: new Date().toISOString().split('T')[0]
+            });
+            
+            alert(`Leave applied successfully for ${daysDiff} day(s)`);
+            closeModal();
+            loadMembers();
+        }
+
+        function updateLeave(e) {
+            e.preventDefault();
+            
+            const leaveId = editLeaveIdInput.value;
+            const memberId = editMemberIdInput.value;
+            const memberType = editMemberTypeInput.value;
+            const fromDate = editFromDateInput.value;
+            const toDate = editToDateInput.value;
+            const reason = editReasonInput.value;
+            
+            if (!fromDate || !toDate) {
+                alert('Please select both from and to dates');
+                return;
+            }
+            
+            const from = new Date(fromDate);
+            const to = new Date(toDate);
+            const timeDiff = to.getTime() - from.getTime();
+            const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
+            
+            if (daysDiff <= 0) {
+                alert('To date must be after from date');
+                return;
+            }
+            
+            const member = findMemberById(memberId, memberType);
+            if (!member) return;
+            
+            const leave = member.leaveHistory.find(l => l.id == leaveId);
+            if (!leave) return;
+            
+            const oldDays = leave.days;
+            const dayDifference = daysDiff - oldDays;
+            
+            if (memberType === 'mtech') {
+                if (leave.type === 'casual' && member.casualLeave < dayDifference) {
+                    alert(`Not enough casual leave balance for this update. Available: ${member.casualLeave}, Required: ${dayDifference}`);
+                    return;
+                }
+                if (leave.type === 'od' && member.onDuty < dayDifference) {
+                    alert(`Not enough on duty balance for this update. Available: ${member.onDuty}, Required: ${dayDifference}`);
+                    return;
+                }
+            } else if (memberType === 'phd') {
+                if (leave.type === 'casual' && member.casualLeave < dayDifference) {
+                    alert(`Not enough casual leave balance for this update. Available: ${member.casualLeave}, Required: ${dayDifference}`);
+                    return;
+                }
+                if (leave.type === 'rh' && member.rhLeave < dayDifference) {
+                    alert(`Not enough restricted holiday balance for this update. Available: ${member.rhLeave}, Required: ${dayDifference}`);
+                    return;
+                }
+                if (leave.type === 'vacation' && member.vacationLeave < dayDifference) {
+                    alert(`Not enough vacation/medical leave balance for this update. Available: ${member.vacationLeave}, Required: ${dayDifference}`);
+                    return;
+                }
+                if (leave.type === 'od' && member.onDuty < dayDifference) {
+                    alert(`Not enough on duty balance for this update. Available: ${member.onDuty}, Required: ${dayDifference}`);
+                    return;
+                }
+            } else if (memberType === 'project') {
+                const leavesTaken = member.leaveHistory.reduce((total, l) => {
+                    if (l.id == leaveId) return total;
+                    return total + l.days;
+                }, 0);
+                if (leavesTaken + daysDiff > member.totalLeave) {
+                    alert(`Not enough leave balance for this update. Available: ${member.totalLeave - leavesTaken}, Required: ${daysDiff}`);
+                    return;
+                }
+            }
+            
+            if (memberType === 'mtech') {
+                if (leave.type === 'casual') {
+                    member.casualLeave -= dayDifference;
+                } else if (leave.type === 'od') {
+                    member.onDuty -= dayDifference;
+                }
+            } else if (memberType === 'phd') {
+                if (leave.type === 'casual') {
+                    member.casualLeave -= dayDifference;
+                } else if (leave.type === 'rh') {
+                    member.rhLeave -= dayDifference;
+                } else if (leave.type === 'vacation') {
+                    member.vacationLeave -= dayDifference;
+                } else if (leave.type === 'od') {
+                    member.onDuty -= dayDifference;
+                }
+            }
+            
+            leave.fromDate = fromDate;
+            leave.toDate = toDate;
+            leave.days = daysDiff;
+            leave.reason = reason;
+            
+            alert(`Leave updated successfully`);
+            closeModal();
+            loadMembers();
+            loadAllMembers();
+        }
+
+        function deleteLeave() {
+            const leaveId = editLeaveIdInput.value;
+            const memberId = editMemberIdInput.value;
+            const memberType = editMemberTypeInput.value;
+            
+            const member = findMemberById(memberId, memberType);
+            if (!member) return;
+            
+            const leaveIndex = member.leaveHistory.findIndex(l => l.id == leaveId);
+            if (leaveIndex === -1) return;
+            
+            const leave = member.leaveHistory[leaveIndex];
+            
+            if (memberType === 'mtech') {
+                if (leave.type === 'casual') {
+                    member.casualLeave += leave.days;
+                } else if (leave.type === 'od') {
+                    member.onDuty += leave.days;
+                }
+            } else if (memberType === 'phd') {
+                if (leave.type === 'casual') {
+                    member.casualLeave += leave.days;
+                } else if (leave.type === 'rh') {
+                    member.rhLeave += leave.days;
+                } else if (leave.type === 'vacation') {
+                    member.vacationLeave += leave.days;
+                } else if (leave.type === 'od') {
+                    member.onDuty += leave.days;
+                }
+            }
+            
+            member.leaveHistory.splice(leaveIndex, 1);
+            
+            alert(`Leave deleted successfully`);
+            closeModal();
+            loadMembers();
+            loadAllMembers();
+        }
+
+        function updateQuota(e) {
+            e.preventDefault();
+            
+            const memberId = quotaMemberIdInput.value;
+            const memberType = quotaMemberTypeInput.value;
+            
+            const member = findMemberById(memberId, memberType);
+            if (!member) return;
+            
+            if (memberType === 'mtech') {
+                const newCasual = parseInt(quotaCasualInput.value);
+                const newOd = parseInt(quotaOdInput.value);
+                
+                if (isNaN(newCasual) || newCasual < 0) {
+                    alert('Please enter a valid casual leave quota');
+                    return;
+                }
+                if (isNaN(newOd) || newOd < 0) {
+                    alert('Please enter a valid on duty quota');
+                    return;
+                }
+                
+                member.casualLeave = newCasual;
+                member.onDuty = newOd;
+                
+                alert(`Quota updated for ${member.name}\nCasual Leave: ${newCasual}\nOn Duty: ${newOd}`);
+            } else if (memberType === 'phd') {
+                const newCasual = parseInt(quotaCasualInput.value);
+                const newOd = parseInt(quotaOdInput.value);
+                const newRh = parseInt(quotaRhInput.value);
+                const newVacation = parseInt(quotaVacationInput.value);
+                
+                if (isNaN(newCasual) || newCasual < 0) {
+                    alert('Please enter a valid casual leave quota');
+                    return;
+                }
+                if (isNaN(newOd) || newOd < 0) {
+                    alert('Please enter a valid on duty quota');
+                    return;
+                }
+                if (isNaN(newRh) || newRh < 0) {
+                    alert('Please enter a valid restricted holiday quota');
+                    return;
+                }
+                if (isNaN(newVacation) || newVacation < 0) {
+                    alert('Please enter a valid vacation/medical leave quota');
+                    return;
+                }
+                
+                member.casualLeave = newCasual;
+                member.onDuty = newOd;
+                member.rhLeave = newRh;
+                member.vacationLeave = newVacation;
+                
+                alert(`Quota updated for ${member.name}\nCasual Leave: ${newCasual}\nRestricted Holiday: ${newRh}\nVacation/Medical: ${newVacation}\nOn Duty: ${newOd}`);
+            } else if (memberType === 'project') {
+                const newTotal = parseInt(quotaTotalInput.value);
+                
+                if (isNaN(newTotal) || newTotal < 0) {
+                    alert('Please enter a valid total leave quota');
+                    return;
+                }
+                
+                member.totalLeave = newTotal;
+                alert(`Total leave quota updated for ${member.name}: ${newTotal} days`);
+            }
+            
+            closeModal();
+            loadMembersForQuotaEdit();
+        }
+
+        function applyBulkQuotaChanges(e) {
+            e.preventDefault();
+            
+            const memberType = bulkMemberTypeSelect.value;
+            const mtechYear = bulkMtechYearSelect.value;
+            const mtechSpec = bulkMtechSpecSelect.value;
+            const resetBalances = bulkResetBalancesCheckbox.checked;
+            
+            const newCasual = bulkCasualInput.value ? parseInt(bulkCasualInput.value) : null;
+            const newOd = bulkOdInput.value ? parseInt(bulkOdInput.value) : null;
+            const newRh = bulkRhInput.value ? parseInt(bulkRhInput.value) : null;
+            const newVacation = bulkVacationInput.value ? parseInt(bulkVacationInput.value) : null;
+            const newTotal = bulkTotalInput.value ? parseInt(bulkTotalInput.value) : null;
+            
+            let updatedCount = 0;
+            
+            // Apply to M.Tech students
+            if (memberType === 'mtech' || memberType === 'all') {
+                for (const year in membersData.mtech) {
+                    if (mtechYear !== 'all' && year !== mtechYear) continue;
+                    
+                    for (const spec in membersData.mtech[year]) {
+                        if (mtechSpec !== 'all' && spec !== mtechSpec) continue;
+                        
+                        membersData.mtech[year][spec].forEach(student => {
+                            if (newCasual !== null) {
+                                if (resetBalances) {
+                                    student.casualLeave = newCasual;
+                                } else {
+                                    // Adjust current balance based on new quota
+                                    student.casualLeave = newCasual;
+                                }
+                            }
+                            if (newOd !== null) {
+                                if (resetBalances) {
+                                    student.onDuty = newOd;
+                                } else {
+                                    student.onDuty = newOd;
+                                }
+                            }
+                            updatedCount++;
+                        });
+                    }
+                }
+            }
+            
+            // Apply to PhD candidates
+            if (memberType === 'phd' || memberType === 'all') {
+                membersData.phd.forEach(phd => {
+                    if (newCasual !== null) {
+                        if (resetBalances) {
+                            phd.casualLeave = newCasual;
+                        } else {
+                            phd.casualLeave = newCasual;
+                        }
+                    }
+                    if (newOd !== null) {
+                        if (resetBalances) {
+                            phd.onDuty = newOd;
+                        } else {
+                            phd.onDuty = newOd;
+                        }
+                    }
+                    if (newRh !== null) {
+                        if (resetBalances) {
+                            phd.rhLeave = newRh;
+                        } else {
+                            phd.rhLeave = newRh;
+                        }
+                    }
+                    if (newVacation !== null) {
+                        if (resetBalances) {
+                            phd.vacationLeave = newVacation;
+                        } else {
+                            phd.vacationLeave = newVacation;
+                        }
+                    }
+                    updatedCount++;
+                });
+            }
+            
+            // Apply to Project staff
+            if (memberType === 'project' || memberType === 'all') {
+                if (newTotal !== null) {
+                    membersData.project.forEach(staff => {
+                        if (resetBalances) {
+                            staff.totalLeave = newTotal;
+                        } else {
+                            staff.totalLeave = newTotal;
+                        }
+                        updatedCount++;
+                    });
+                }
+            }
+            
+            alert(`Bulk quota update completed!\n${updatedCount} members updated.`);
+            closeModal();
+            loadMembersForQuotaEdit();
+        }
+
+        function findMemberById(memberId, memberType) {
+            if (memberType === 'mtech') {
+                for (const year in membersData.mtech) {
+                    for (const spec in membersData.mtech[year]) {
+                        const member = membersData.mtech[year][spec].find(m => m.id == memberId);
+                        if (member) return member;
+                    }
+                }
+            } else if (memberType === 'phd') {
+                return membersData.phd.find(m => m.id == memberId);
+            } else if (memberType === 'project') {
+                return membersData.project.find(m => m.id == memberId);
+            }
+            return null;
+        }
+
+        function applyDateFilter() {
+            const startDate = startDateInput.value;
+            const endDate = endDateInput.value;
+            const memberType = filterMemberTypeDateSelect.value;
+            
+            if (!startDate || !endDate) {
+                alert('Please select both start and end dates');
+                return;
+            }
+            
+            let results = [];
+            
+            if (memberType === 'all' || memberType === 'mtech') {
+                for (const year in membersData.mtech) {
+                    for (const spec in membersData.mtech[year]) {
+                        membersData.mtech[year][spec].forEach(student => {
+                            student.leaveHistory.forEach(leave => {
+                                if (leave.fromDate >= startDate && leave.fromDate <= endDate) {
+                                    results.push({
+                                        memberType: 'M.Tech Student',
+                                        name: student.name,
+                                        rollNo: student.rollNo,
+                                        leaveType: leave.type,
+                                        fromDate: leave.fromDate,
+                                        toDate: leave.toDate,
+                                        days: leave.days,
+                                        reason: leave.reason
+                                    });
+                                }
+                            });
+                        });
+                    }
+                }
+            }
+            
+            if (memberType === 'all' || memberType === 'phd') {
+                membersData.phd.forEach(phd => {
+                    phd.leaveHistory.forEach(leave => {
+                        if (leave.fromDate >= startDate && leave.fromDate <= endDate) {
+                            results.push({
+                                memberType: 'PhD Candidate',
+                                name: phd.name,
+                                rollNo: phd.rollNo,
+                                leaveType: leave.type,
+                                fromDate: leave.fromDate,
+                                toDate: leave.toDate,
+                                days: leave.days,
+                                reason: leave.reason
+                            });
+                        }
+                    });
+                });
+            }
+            
+            if (memberType === 'all' || memberType === 'project') {
+                membersData.project.forEach(projectStaff => {
+                    projectStaff.leaveHistory.forEach(leave => {
+                        if (leave.fromDate >= startDate && leave.fromDate <= endDate) {
+                            results.push({
+                                memberType: 'Project Staff',
+                                name: projectStaff.name,
+                                rollNo: projectStaff.rollNo,
+                                leaveType: leave.type,
+                                fromDate: leave.fromDate,
+                                toDate: leave.toDate,
+                                days: leave.days,
+                                reason: leave.reason
+                            });
+                        }
+                    });
+                });
+            }
+            
+            if (results.length > 0) {
+                dateFilterResults.innerHTML = `
+                    <div class="selection-container">
+                        <h3>Leaves Taken Between ${startDate} and ${endDate}</h3>
+                        <p>Total leaves found: ${results.length}</p>
+                        <div class="history-list">
+                            ${results.map(result => `
+                                <div class="history-item">
+                                    <div>
+                                        <div><strong>${result.name} (${result.rollNo})</strong></div>
+                                        <div>${result.fromDate} to ${result.toDate} (${result.days} day(s))</div>
+                                        <div style="font-size: 0.8rem; color: #7f8c8d;">${result.reason || 'No reason provided'}</div>
+                                    </div>
+                                    <div>
+                                        <span class="leave-type type-${result.leaveType}">${result.leaveType.toUpperCase()}</span>
+                                        <div style="font-size: 0.8rem; margin-top: 5px;">${result.memberType}</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            } else {
+                dateFilterResults.innerHTML = `
+                    <div class="selection-container">
+                        <h3>Leaves Taken Between ${startDate} and ${endDate}</h3>
+                        <p>No leaves found in the selected date range.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function showQuickStats() {
+            let totalMembers = 0;
+            let totalLeaves = 0;
+            let totalCasualBalance = 0;
+            let totalOdBalance = 0;
+            
+            for (const year in membersData.mtech) {
+                for (const spec in membersData.mtech[year]) {
+                    totalMembers += membersData.mtech[year][spec].length;
+                    membersData.mtech[year][spec].forEach(student => {
+                        totalLeaves += student.leaveHistory.length;
+                        totalCasualBalance += student.casualLeave;
+                        totalOdBalance += student.onDuty;
+                    });
+                }
+            }
+            
+            totalMembers += membersData.phd.length;
+            membersData.phd.forEach(phd => {
+                totalLeaves += phd.leaveHistory.length;
+                totalCasualBalance += phd.casualLeave;
+                totalOdBalance += phd.onDuty;
+            });
+            
+            totalMembers += membersData.project.length;
+            membersData.project.forEach(staff => {
+                totalLeaves += staff.leaveHistory.length;
+            });
+            
+            alert(`Quick Statistics:\n\nTotal Members: ${totalMembers}\nTotal Leaves Applied: ${totalLeaves}\nTotal Casual Leave Balance: ${totalCasualBalance}\nTotal On Duty Balance: ${totalOdBalance}`);
+        }
+
+        function exportData() {
+            alert('Data export functionality would be implemented here. This would generate a CSV or Excel file with all leave data.');
+        }
+
+        function refreshData() {
+            alert('Data refreshed successfully!');
+            loadAllMembers();
+        }
+
+        // Initialize
+        bulkMtechYearContainer.style.display = 'none';
+        bulkMtechSpecContainer.style.display = 'none';
+    </script>
+</body>
+</html>
